@@ -12,13 +12,13 @@ public class blockSystem : MonoBehaviour
     private string[] solidNames;
 
     // list to store all existing blocks
-    public Block[] allBlocks;
+    public BlockType[] allBlockTypes;
 
     private void Awake()
     {
 
         // Initialize allBlocks array
-        allBlocks = new Block[solidBlocks.Length];
+        allBlockTypes = new BlockType[solidBlocks.Length];
 
         // int to create block IDs
         int newBlockID = 0;
@@ -27,8 +27,8 @@ public class blockSystem : MonoBehaviour
         for (int i = 0; i < solidBlocks.Length; i++)
         {
 
-            allBlocks[newBlockID] = new Block(newBlockID, solidNames[i], solidBlocks[i]);
-            Debug.Log("Solid block: allBlocks[" + newBlockID + "]" + solidNames[i]);
+            allBlockTypes[newBlockID] = new BlockType(newBlockID, solidNames[i], solidBlocks[i]);
+            Debug.Log("Solid block: allBlockTypes[" + newBlockID + "]" + solidNames[i]);
             newBlockID++;
 
         }
@@ -36,18 +36,25 @@ public class blockSystem : MonoBehaviour
     }
 }
 
-public class Block
+public class BlockType
 {
 
     private int blockID;
     private string blockName;
     private Sprite blockSprite;
 
-    public Block(int id, string myName, Sprite mySprite)
+    public BlockType(int id, string myName, Sprite mySprite)
     {
         blockID = id;
         blockName = myName;
         blockSprite = mySprite;
+    }
+
+    public Sprite getSprite() 
+    {
+
+        return blockSprite;    
+    
     }
 
 }
