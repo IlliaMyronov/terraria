@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,25 +10,26 @@ public class world : MonoBehaviour
 
     // variables for the block template
     [SerializeField]
-    private GameObject tilePrefab;
+    private GameObject blockPrefab;
 
-    private int numOfBlocksX = 240;
-    private int numOfBlocksY = 135;
-    int[,] worldArr = new int[240, 135];
+    // size of one block is 16x16
+    private int numOfBlocksX = 120;
+    private int numOfBlocksY = 68;
+    int[,] worldArr = new int[120, 68];
 
     private void Awake()
     {
 
         // 2d Array to store the world
-        
 
-        for (int i = 0; i < 135; i++)
+
+        for (int i = 0; i < numOfBlocksY; i++)
         {
 
-            for (int j = 0; j < 240; j++)
+            for (int j = 0; j < numOfBlocksX; j++)
             {
 
-                if (i > 45)
+                if (i > 22)
                 {
 
                     worldArr[j, i] = 0;
@@ -44,25 +45,26 @@ public class world : MonoBehaviour
 
             }
         }
-        
+
         displayMap();
     }
 
-    public void displayMap ()
+    public void displayMap()
     {
 
-        for (int i = 0; i < 135; i++)
+        for (int i = 0; i < numOfBlocksY; i++)
         {
 
-            for (int j = 0; j < 240; j++)
+            for (int j = 0; j < numOfBlocksX; j++)
             {
 
                 if (worldArr[j, i] != -1)
                 {
 
-                    
-                    GameObject tile = Instantiate(tilePrefab) as GameObject;
+
+                    GameObject tile = Instantiate(blockPrefab) as GameObject;
                     tile.transform.position = new Vector2(j - numOfBlocksX / (float)2.0, numOfBlocksY / (float)2.0 - i);
+                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlockTypes[0].getSprite();
 
 
                 }

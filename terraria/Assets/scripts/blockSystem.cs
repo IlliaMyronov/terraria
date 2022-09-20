@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,11 +50,11 @@ public class BlockType
         blockSprite = mySprite;
     }
 
-    public Sprite getSprite() 
+    public Sprite getSprite()
     {
 
-        return blockSprite;    
-    
+        return blockSprite;
+
     }
 
 }
