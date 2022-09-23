@@ -64,8 +64,7 @@ public class world : MonoBehaviour
 
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
                     tile.transform.position = new Vector2(j - numOfBlocksX / (float)2.0, numOfBlocksY / (float)2.0 - i);
-                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlockTypes[0].getSprite();
-
+                    tile.GetComponent<block>().speed = 15.0f;
 
                 }
 
