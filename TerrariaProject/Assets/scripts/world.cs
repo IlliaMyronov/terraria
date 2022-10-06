@@ -16,6 +16,13 @@ public class world : MonoBehaviour
     private int numOfBlocksX = 120;
     private int numOfBlocksY = 68;
     int[,] worldArr = new int[120, 68];
+    GameObject[,] scene = new GameObject[120, 68];
+
+    // variable for knowing if the button was pressed previously
+    private bool moving;
+
+    // string to send messages to a block
+    private string notification;
 
     private void Awake()
     {
@@ -64,7 +71,8 @@ public class world : MonoBehaviour
 
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
                     tile.transform.position = new Vector2(j - numOfBlocksX / (float)2.0, numOfBlocksY / (float)2.0 - i);
-                    tile.GetComponent<block>().speed = 15.0f;
+                    tile.GetComponent<block>().velocity = 0.0f;
+                    scene[j, i] = tile;
 
                 }
 
@@ -73,5 +81,58 @@ public class world : MonoBehaviour
         }
 
     }
+
+
+    private void Update() 
+    {
+ 
+
+        if (Input.GetKeyDown(KeyCode.A) == true)
+        {
+            notification = "moveLeft";
+            moving = true;
+            notify(notification);
+            Debug.Log("Move left");
+        }
+
+        else if (Input.GetKeyDown(KeyCode.D) == true)
+        {
+
+            notification = "moveRight";
+            moving = true;
+            notify(notification);
+            Debug.Log("move right");
+        }
+
+        else if (Input.GetKeyDown(KeyCode.A) == false && Input.GetKeyDown(KeyCode.D) == false && moving == true)
+        {
+            notification = "stop";
+            moving = false;
+            notify(notification);
+            Debug.Log("stop");
+        }
+
+    }
+
+    private void notify(string message)
+    {
+        for (int i = 0; i < numOfBlocksY; i++)
+        {
+
+            for (int j = 0; j < numOfBlocksX; j++)
+            {
+
+                if (scene[j, i] != null)
+                {
+
+
+                    scene[j, i].GetComponent<block>().notify(message);
+
+                }
+
+            }
+
+        }
+    } 
 
 }
