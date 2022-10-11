@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -112,6 +113,11 @@ public class world : MonoBehaviour
             Debug.Log("stop");
         }
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            destroyBlock(Input.mousePosition);
+        }
+
     }
 
     private void notify(string message)
@@ -134,5 +140,12 @@ public class world : MonoBehaviour
 
         }
     } 
+
+    private void destroyBlock(Vector2 mouse)
+    {
+        int x = (int) Math.Round(mouse.x / numOfBlocksX);
+        int y = (int)Math.Round(mouse.y / numOfBlocksY);
+        Destroy(scene[x, y]);
+    }
 
 }

@@ -51,5 +51,4 @@ public class block : MonoBehaviour {
 		rb.velocity = new Vector2(velocity, 0);
 	}
 	
-
 }
