@@ -8,16 +8,14 @@ public class worldController : MonoBehaviour
     // reference to scripts to control the world
     [SerializeField]
     private WorldModel worldModel;
-    [SerializeField]
-    private worldGeneration worldGen;
 
     private string buttonHeld;
     private string notification;
 
     private void Start()
     {
-        worldGen.generateWorld();
-        worldModel.drawWorld(worldGen.worldArr);
+        worldModel.generateWorld();
+        worldModel.drawWorld();
 
     }
 
