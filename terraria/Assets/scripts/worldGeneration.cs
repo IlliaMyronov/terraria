@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
-public class worldGeneration : MonoBehaviour
+public class WorldGeneration : MonoBehaviour
 {
     // world size properties
     private static int numOfBlocksX;

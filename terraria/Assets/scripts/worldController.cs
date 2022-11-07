@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
-public class worldController : MonoBehaviour
+public class WorldController : MonoBehaviour
 {
     // reference to scripts to control the world
     [SerializeField]

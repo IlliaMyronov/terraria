@@ -7,29 +7,30 @@ using UnityEngine;
 public class WorldRedrawer : MonoBehaviour
 {
 
-    private int oldOffsetX;
-    private int oldOffsetY;
-    private int dOffsetX;
-    private int dOffsetY;
-    private float xLocation;
-    private float yLocation;
-    private int lastOffsetX;
-    private int lastOffsetY;
-    public List<List<GameObject>> drawWorld(List<List<int>> world, List<List<GameObject>> scene, int screenSizeY, int screenSizeX, GameObject blockPrefab, int offsetX, int offsetY)
+    private int xOffset;
+    private int yOffset;
+    private int startPosX;
+    private int startPosY;
+    public List<List<GameObject>> drawWorldV2 (List<List<GameObject>> scene, List<List<int>> world, GameObject blockPrefab, int screenSizeX, int screenSizeY)
     {
-        oldOffsetX = offsetX;
-        oldOffsetY = offsetY;
-        Debug.Log("initial x offset is " + offsetX);
+
+        startPosX = world[0].Count / 2;
+        startPosY = world.Count / 2;
+        xOffset = 0;
+        yOffset = 0;
+
         for (int i = 0; i < screenSizeY; i++)
         {
+
             scene.Add(new List<GameObject>());
+
             for (int j = 0; j < screenSizeX; j++)
             {
 
-                if (world[i + offsetY][j + offsetX] != -1)
+                if (world[i + startPosY - (screenSizeY / 2)][j + startPosX - (screenSizeX / 2)] != -1)
                 {
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
-                    tile.transform.position = new Vector2(j - screenSizeX / (float)2.0, screenSizeY / (float)2.0 - i);
+                    tile.transform.position = new Vector2(j - (screenSizeX / (float)2.0), (screenSizeY / (float)2.0) - i);
                     scene[i].Add(tile);
 
                 }
@@ -38,52 +39,52 @@ public class WorldRedrawer : MonoBehaviour
                 {
                     scene[i].Add(null);
                 }
+            }
+        }
+        return scene;
+
+    }
+
+    public List<List<GameObject>> redrawWorldV3 (List<List<GameObject>> scene, List<List<int>> world, GameObject blockPrefab, Vector2 relativePos, int blockSize, int screenSizeX, int screenSizeY, Vector2 actualPos)
+    {
+
+        //character moved 100 or more pixels to the right
+        if (relativePos.x > 100)
+        {
+
+            // n is number of blocks we moved by
+            int n = (int)(relativePos.x / blockSize);
+
+            // if error of shift is more than one block we have to fix this error by running algorithm one more time
+            if ((actualPos.x - xOffset) > blockSize)
+            {
+
+                n++;
+                Debug.Log("fixing the error");
 
             }
 
-        }
-
-        return scene;
-
-    }
-
-
-    public List<List<GameObject>> drawWorldV2 (List<List<GameObject>> scene, List<List<GameObject>> world, int screenSizeY, int screenSizeX, int offsetX, int offsetY, GameObject blockPrefab)
-    {
-
-        return scene;
-
-    }
-
-
-    public List<List<GameObject>> redrawWorldV2(List<List<GameObject>> scene, List<List<int>> world, GameObject blockPrefab, int screenSizeX, int screenSizeY, float relativeX, float relativeY, int blockSize)
-    {
-
-        if (relativeX > 100)
-        {
-            
-            for(int i = 0; i < screenSizeX; i++)
+            //going through all blocks from top to bottom
+            for (int i = 0; i < screenSizeY; i++)
             {
 
-                // n is number of blocks we moved by
-                int n = (int)(relativeX / blockSize);
-
+                //adding and deleting needed amount of blocks (n blocks)
                 for (int j = 0; j < n; j++)
                 {
 
-                    // check if there is a tile on the location we are filling now
-                    if (world[i][(lastOffsetX / 16) + screenSizeX - n + j] != -1)
-                    {
-                        // add a block and give it needed coordinates
-                        GameObject tile = Instantiate(blockPrefab) as GameObject;
-                        tile.transform.position = new Vector2(((float)screenSizeX / 2.0f) - n + j + (relativeX - (n * blockSize)) / (float)blockSize, screenSizeY / (float)2.0 - i);
-                        scene[i].Add(tile);
+                    // check if there is a tile on the location we are filling now, if there is, we will add a block
+                    if (world[i][(int)(xOffset / blockSize) + startPosX + (screenSizeX / 2) + (j + 1)] != -1)
+                    {   
 
+                        GameObject tile = Instantiate(blockPrefab) as GameObject;
+                        tile.transform.position = new Vector2((float)((xOffset / blockSize) + (screenSizeX / 2)) + j, screenSizeY / (float)2.0 - i);
+                        scene[i].Add(tile);
                     }
 
+                    // if there is no block at needed position add null instead of a block
                     else
                     {
-                        // if there is no block at needed position add null instead of a block
+                   
                         scene[i].Add(null);
                     }
 
@@ -92,60 +93,66 @@ public class WorldRedrawer : MonoBehaviour
                     {
                         Destroy(scene[i][0]);
                     }
-                    else
-                        scene[i].RemoveAt(0);
+                    scene[i].RemoveAt(0);
+
                 }
             }
+
+            // change position coordinates
+            xOffset = xOffset + (n * blockSize);
         }
-        return scene;
 
-    }
-
-
-    public List<List<GameObject>> redrawWorld(List<List<GameObject>> scene, List<List<int>> world, int screenSizeX, int screenSizeY, int offsetX, int offsetY, GameObject blockPrefab) 
-    {
-        dOffsetX = offsetX - oldOffsetX;
-        dOffsetY = offsetY - oldOffsetY;
-        Debug.Log(offsetX + "    " + oldOffsetX + "      " + dOffsetX);
-
-        if(dOffsetX > 5)
+        // if character moved 100 blocks to the left (or more)
+        else if(relativePos.x < -100)
         {
+
+            // n is number of blocks we moved by
+            int n = (int)(relativePos.x / blockSize);
+
+            if (Math.Abs(actualPos.x - xOffset) > blockSize)
+            {
+
+                n--;
+                Debug.Log("fixing the error");
+
+            }
+
             for(int i = 0; i < screenSizeY; i++)
             {
 
-                for(int j = 0; j < Mathf.Abs(dOffsetX); j++)
+                for(int j = 0; j < Math.Abs(n); j++)
                 {
-                    // adding a tile to the end of an array
-                    if (world[i + offsetY][oldOffsetX + screenSizeX + j] != -1)
+
+                    if (world[i][startPosX + (xOffset / blockSize) - (screenSizeX / 2) - (j + 1)] != -1)
                     {
 
                         GameObject tile = Instantiate(blockPrefab) as GameObject;
-                        tile.transform.position = new Vector2(screenSizeX / 2 - dOffsetX + j, screenSizeY / (float)2.0 - i);
-                        scene[i].Add(tile);
+                        Debug.Log("start position is " + startPosX + "; offset in pixels is " + xOffset);
+                        tile.transform.position = new Vector2((xOffset / blockSize) - (screenSizeX / 2) - (j + 1), screenSizeY / (float)2.0 - i);
+                        scene[i].Insert(0, tile);
 
                     }
-
                     else
                     {
-                        scene[i].Add(null);
+                        scene[i].Insert(0, null);
                     }
-
-                    // deleting a tile from the start of an array
-
-                    if (scene[i][0] != null) 
+                  
+                    if (scene[i][scene[i].Count - 1] != null)
                     {
-                        Destroy(scene[i][0]);
+                        Destroy(scene[i][scene[i].Count - 1]);
                     }
-                        
-                    scene[i].RemoveAt(0);
+                    scene[i].RemoveAt(scene[i].Count - 1);
 
-                    
                 }
+
             }
+
+            xOffset = xOffset + (n * blockSize);
+
         }
 
         return scene;
-    }
-    
+
+    }    
 
 }

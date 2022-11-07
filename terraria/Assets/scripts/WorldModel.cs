@@ -7,36 +7,34 @@ using UnityEngine;
 public class WorldModel : MonoBehaviour
 {
 
-    private int screenSizeX = 140;
-    private int screenSizeY = 68;
+    private static Vector2 screenSize = new Vector2(120, 68);
+    private int chunkSizeX = 140;
+    private int chunkSizeY = 68;
     private int blockSize = 16;
-    private float relativePosX = 0;
-    private float relativePosY = 0;
+    private Vector2 relativePos = new Vector2(0.0f, 0.0f);
+    private Vector2 realPos = new Vector2(0.0f, 0.0f);
     Vector2 velocity = new Vector2();
     [SerializeField]
     private GameObject blockPrefab;
     private List<List<GameObject>> scene = new List<List<GameObject>>();
     [SerializeField]
-    private worldGeneration worldGen;
+    private WorldGeneration worldGen;
     [SerializeField]
     private WorldRedrawer worldRedrawer;
-    private int worldOffsetX;
-    private int worldOffsetY;
-
+    [SerializeField]
+    private GameObject cam;
+    private Vector2 acceleration;
+    private float friction = 10.0f;
     public void generateWorld()
     {
         worldGen.generateWorld();
-        worldOffsetX = worldGen.getWorldSize(true) / 2 - (screenSizeX / 2);
-        worldOffsetY = worldGen.getWorldSize(false) / 2 - (screenSizeY / 2);
-        Debug.Log("X offset is " + worldOffsetX + " and Y offset is " + worldOffsetY);
-        scene = worldRedrawer.drawWorld(worldGen.getWorld(), scene, screenSizeY, screenSizeX, blockPrefab, worldOffsetX, worldOffsetY);
+        scene = worldRedrawer.drawWorldV2(scene, worldGen.getWorld(), blockPrefab, chunkSizeX, chunkSizeY);
     }
     public void drawWorld()
     {
 
         Debug.Log("start redrawing");
         
-
     }
 
 
@@ -45,50 +43,35 @@ public class WorldModel : MonoBehaviour
 
         if (moveType == "moveLeft")
         {
-            velocity.x = velocity.x - 5;
+            acceleration.x = -5.0f;
         }
 
         else if (moveType == "moveRight")
         {
-            velocity.x = velocity.x + 5;
+            acceleration.x = 5.0f;
         }
 
         else if (moveType == "stop")
         {
-            velocity.x = 0;
+            acceleration.x = 0.0f;
         }
-
-        blockMove(velocity);
 
     }
 
-    private void blockMove(Vector2 velocity)
+    private void moveChar(Vector2 velocity)
     {
 
-        for (int i = 0; i < screenSizeY; i++)
-        {
-                
-            for (int j = 0; j < screenSizeX; j++)
-            {
-
-                if (scene[i][j] != null)
-                {
-
-                    scene[i][j].GetComponent<block>().move(velocity);
-
-                }
-
-            }
-
-        }
+        cam.GetComponent<Cam>().move(velocity);
+        
     }
 
     public void destroyBlock(Vector2 mousePos)
     {
 
-        Debug.Log("relative x = " + relativePosX + " and relative y = " + relativePosY);
-        int x = (int)Math.Round((mousePos.x - relativePosX) / blockSize);
-        int y = (int)Math.Round((1080 - mousePos.y - relativePosY) / blockSize);
+        Debug.Log("mouse pos x is " + mousePos.x + " mouse pos y is " + mousePos.y);
+        int x = (int)Math.Round(((mousePos.x + relativePos.x) / blockSize) + (chunkSizeX - screenSize.x) / 2);
+        int y = (int)Math.Round((1080 - mousePos.y - relativePos.y) / blockSize);
+        Debug.Log("deleting block by coordinates x = " + x + ", y = " + y);
         Destroy(scene[y][x]);
 
     }
@@ -96,17 +79,47 @@ public class WorldModel : MonoBehaviour
     private void Update()
     {
         // velocity is in units/seconds; there are blockSize pixels in a single unit and Time.deltaTime is time since last frame
-        relativePosX -= blockSize*(velocity.x)*Time.deltaTime;
-        relativePosY += blockSize*(velocity.y)*Time.deltaTime;
-        if ((relativePosX > 100) || (relativePosX < -100))
+        relativePos.x += blockSize*(velocity.x)*Time.deltaTime;
+        relativePos.y += blockSize*(velocity.y)*Time.deltaTime;
+        //character speeds up because button was pressed
+        if (acceleration.x != 0.0f && Math.Abs(velocity.x) < 5.0f)
         {
-            Debug.Log("old off set is " + worldOffsetX + " relative x pos is " + relativePosX + " new offset should be " + (worldOffsetX + (int)(relativePosX / 16)));
-            worldOffsetX = (worldOffsetX + (int)(relativePosX / 16));
-            worldOffsetY = worldOffsetY + (int) (relativePosY / 16);
-            Debug.Log("new offset is " + worldOffsetX);
-            scene = worldRedrawer.redrawWorld(scene, worldGen.getWorld(), screenSizeX, screenSizeY, worldOffsetX, worldOffsetY, blockPrefab);
-            relativePosX = 0;
-            this.blockMove(velocity);
+            velocity.x = velocity.x + (acceleration.x * Time.deltaTime);
+        }
+        //character stops due to friction
+        else if (Math.Abs(velocity.x) != 0 && acceleration.x == 0.0f)
+        {
+
+            if (Math.Abs(velocity.x) < 0.1f)
+            {
+
+                velocity.x = 0.0f;
+                moveChar(velocity);
+            }
+
+            else
+            {
+                if (velocity.x > 0)
+                    velocity.x = velocity.x - (friction * Time.deltaTime);
+                else
+                    velocity.x = velocity.x + (friction * Time.deltaTime);
+            }
+        } 
+        
+        velocity.y = velocity.y + (acceleration.y * Time.deltaTime);
+
+        if (velocity.x != 0.0f)
+            moveChar(velocity);
+
+        if ((relativePos.x > 100) || (relativePos.x < -100))
+        {
+            Debug.Log("redrawing because relative pos of x is " + relativePos.x);
+            scene = worldRedrawer.redrawWorldV3(scene, worldGen.getWorld(), blockPrefab, relativePos, blockSize, chunkSizeX, chunkSizeY, realPos);
+            realPos.x += relativePos.x;
+            realPos.y += relativePos.y;
+            relativePos.x = 0;
+            relativePos.y = 0;
+            Debug.Log("relative position of X is " + relativePos.x);
         }
        
     }
