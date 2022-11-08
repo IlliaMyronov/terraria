@@ -9,7 +9,7 @@ public class block : MonoBehaviour
 
     // Use this for initialization
     private SpriteRenderer rend;
-    private Sprite sprite;
+    private Sprite mySprite;
     public float velocity = 0.0f;
     private Rigidbody2D rb;
     private float acceleration;
@@ -19,15 +19,15 @@ public class block : MonoBehaviour
     static private float gravity;
     private float jump;
     private bool isJumping;
-    private void Start()
+    private void Awake()
     {
         rb = this.GetComponent<Rigidbody2D>();
+        rend = this.GetComponent<SpriteRenderer>();
     }
     public void setSprite(Sprite newSprite)
     {
 
-        sprite = newSprite;
-        isJumping = true;
+        rend.sprite = newSprite;
 
     }
 

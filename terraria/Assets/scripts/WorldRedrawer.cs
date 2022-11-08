@@ -11,6 +11,8 @@ public class WorldRedrawer : MonoBehaviour
     private int yOffset;
     private int startPosX;
     private int startPosY;
+    [SerializeField]
+    private BlockSystem blockSys;
     public List<List<GameObject>> drawWorldV2 (List<List<GameObject>> scene, List<List<int>> world, GameObject blockPrefab, int screenSizeX, int screenSizeY)
     {
 
@@ -30,6 +32,8 @@ public class WorldRedrawer : MonoBehaviour
                 if (world[i + startPosY - (screenSizeY / 2)][j + startPosX - (screenSizeX / 2)] != -1)
                 {
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
+                    //method set block sprite decides which sprite block should have
+                    this.setBlockSprite(i + startPosY - (screenSizeY / 2), j + startPosX - (screenSizeX / 2), world, tile);
                     tile.transform.position = new Vector2(j - (screenSizeX / (float)2.0), (screenSizeY / (float)2.0) - i);
                     scene[i].Add(tile);
 
@@ -77,8 +81,10 @@ public class WorldRedrawer : MonoBehaviour
                     {   
 
                         GameObject tile = Instantiate(blockPrefab) as GameObject;
+                        this.setBlockSprite(i, (int)(xOffset / blockSize) + startPosX + (screenSizeX / 2) + (j + 1), world, tile);
                         tile.transform.position = new Vector2((float)((xOffset / blockSize) + (screenSizeX / 2)) + j, screenSizeY / (float)2.0 - i);
                         scene[i].Add(tile);
+
                     }
 
                     // if there is no block at needed position add null instead of a block
@@ -127,7 +133,7 @@ public class WorldRedrawer : MonoBehaviour
                     {
 
                         GameObject tile = Instantiate(blockPrefab) as GameObject;
-                        Debug.Log("start position is " + startPosX + "; offset in pixels is " + xOffset);
+                        this.setBlockSprite(i, startPosX + (xOffset / blockSize) - (screenSizeX / 2) - (j + 1), world, tile);
                         tile.transform.position = new Vector2((xOffset / blockSize) - (screenSizeX / 2) - (j + 1), screenSizeY / (float)2.0 - i);
                         scene[i].Insert(0, tile);
 
@@ -154,5 +160,12 @@ public class WorldRedrawer : MonoBehaviour
         return scene;
 
     }    
+
+    private void setBlockSprite(int blockY, int blockX, List<List<int>> world, GameObject tile)
+    {
+
+        tile.GetComponent<block>().setSprite(blockSys.getBlock(world[blockY][blockX]).getSprite());
+
+    }
 
 }

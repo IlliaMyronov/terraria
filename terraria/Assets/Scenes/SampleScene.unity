@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 166219266}
   - component: {fileID: 166219268}
   - component: {fileID: 166219267}
+  - component: {fileID: 166219269}
   m_Layer: 0
   m_Name: game manager
   m_TagString: Untagged
@@ -186,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37f97976651fea44ab43fdc3a8d9e97f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockSys: {fileID: 166219269}
 --- !u!114 &166219267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +214,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldModel: {fileID: 166219265}
+--- !u!114 &166219269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 166219260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6fa2b031712d274792a1716e2c34310, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  solidBlocks:
+  - {fileID: 21300000, guid: c37cb53194c3795438fa0fa091ebf9ae, type: 3}
+  - {fileID: 21300000, guid: ae9e31f7bb17e8e468a38e7d1d3293d1, type: 3}
+  - {fileID: 21300000, guid: f3c193261e1b5c9489b95076aa200226, type: 3}
+  solidNames:
+  - dirt
+  - grass
+  - goldOre
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

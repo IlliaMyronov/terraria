@@ -54,7 +54,7 @@ public class WorldController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            worldModel.destroyBlock(Input.mousePosition);
+            //worldModel.destroyBlock(Input.mousePosition);
             Debug.Log("mouse key pressed");
         }
 
