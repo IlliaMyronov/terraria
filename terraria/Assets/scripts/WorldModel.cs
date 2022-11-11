@@ -7,7 +7,7 @@ using UnityEngine;
 public class WorldModel : MonoBehaviour
 {
 
-    private static Vector2 screenSize = new Vector2(120, 150);
+    private static Vector2 screenSize = new Vector2(120, 68);
     private int chunkSizeX = 140;
     private int chunkSizeY = 120;
     private int blockSize = 16;
@@ -30,7 +30,7 @@ public class WorldModel : MonoBehaviour
     public void generateWorld()
     {
         worldGen.generateWorld();
-        scene = worldRedrawer.drawWorldV2(scene, worldGen.getWorld(), blockPrefab, chunkSizeX, chunkSizeY);     
+        scene = worldRedrawer.drawWorldV2(scene, worldGen.getWorld(), blockPrefab, chunkSizeX, chunkSizeY);
     }
     public void drawWorld()
     {
@@ -46,11 +46,15 @@ public class WorldModel : MonoBehaviour
         if (moveType == "moveLeft" && mayGoLeft)
         {
             acceleration.x = -5.0f;
+            if (!mayGoRight)
+                mayGoRight = true;
         }
 
         else if (moveType == "moveRight" && mayGoRight)
         {
             acceleration.x = 5.0f;
+            if (!mayGoLeft)
+                mayGoLeft = true;
         }
 
         else if (moveType == "stop")
@@ -113,7 +117,7 @@ public class WorldModel : MonoBehaviour
         if (velocity.x != 0.0f)
             moveChar(velocity);
 
-        /*if (Math.Abs(realPos.x) > (((worldGen.getWorld()[0].Count / 2) - (chunkSizeX / 2)) * blockSize) && velocity.x != 0)
+        if (Math.Abs(realPos.x + relativePos.x) > (((worldGen.getWorld()[0].Count / 2) - (chunkSizeX / 2)) * blockSize) && (velocity.x * realPos.x) > 0)
         {
             Debug.Log("limitting motion");
             if (realPos.x > 0)
@@ -129,12 +133,10 @@ public class WorldModel : MonoBehaviour
                 moveChar(velocity);
             }
 
-        }*/
-        //&& (Math.Abs(realPos.x + relativePos.x) < ((worldGen.getWorld().Count / 2) - (chunkSizeX / 2)) * blockSize)
+        }
 
-        if ((relativePos.x > 100) || (relativePos.x < -100))
+        if (((relativePos.x > 100) || (relativePos.x < -100)) && (Math.Abs(realPos.x / blockSize + (relativePos.x / blockSize)) < ((worldGen.getWorld()[0].Count / 2) - (chunkSizeX / 2))))
         {
-            Debug.Log("first half is " + Math.Abs(realPos.x) + " second half is " + (worldGen.getWorld()[0].Count / 2 * blockSize));
             scene = worldRedrawer.redrawWorldV3(scene, worldGen.getWorld(), blockPrefab, relativePos, blockSize, chunkSizeX, chunkSizeY, realPos);
             realPos.x += relativePos.x;
             realPos.y += relativePos.y;

@@ -200,7 +200,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49af44aadd3620f4799f3196539dd614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scale: 10
+  caveScale: 8
+  groundScale: 2
 --- !u!114 &166219268
 MonoBehaviour:
   m_ObjectHideFlags: 0
