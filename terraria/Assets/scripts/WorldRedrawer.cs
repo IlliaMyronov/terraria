@@ -20,6 +20,7 @@ public class WorldRedrawer : MonoBehaviour
         startPosY = world.Count / 2;
         xOffset = 0;
         yOffset = 0;
+        Debug.Log("start drawing");
 
         for (int i = 0; i < screenSizeY; i++)
         {

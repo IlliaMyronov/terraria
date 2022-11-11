@@ -12,12 +12,18 @@ public class WorldGeneration : MonoBehaviour
     private static int numOfBlocksY;
     List<List<int>> worldArr = new List<List<int>>();
     [SerializeField]
-    int scale;
+    int caveScale;
+    [SerializeField]
+    int groundScale;
     private float offSetX, offSetY;
+    int caveStart = 60;
+    int maxHillSize = 20;
+    int skySize = 30;
+    int caveSize = 60;
 
     private void Awake()
     {
-        numOfBlocksY = 68;
+        numOfBlocksY = caveStart + caveSize;
         numOfBlocksX = 240;
     }
     public void generateWorld()
@@ -25,45 +31,135 @@ public class WorldGeneration : MonoBehaviour
         offSetX = Random.Range(0f, 99999f);
         offSetY = Random.Range(0f, 99999f);
 
-        for (int i = 0; i < numOfBlocksY; i++)
+        for(int i = 0; i < numOfBlocksY; i++)
         {
             worldArr.Add(new List<int>());
+
             for (int j = 0; j < numOfBlocksX; j++)
             {
-
-                // if perlin noise returns value that is greater than 0.5 there should be no block
-                if (generatePerlinValue(j, i) < 0.5)
+                
+                if(i > skySize)
                 {
-                    // since there is a block, check what kind of a block should there be
-                    // if the block is on the very top it should be a grass
-                    if (i != 0)
+
+                    int caveEdge = (int)(maxHillSize - ((2 * maxHillSize) * generatePerlinValue(j, caveStart, caveScale)));
+
+                    if (i < (caveStart - caveEdge))
                     {
-                        // if there is a block above than the block has to be dirt, else grass
-                        if (worldArr[i - 1][j] != -1)
-                        {
-                            worldArr[i].Add(0);
-                        }
-                        else
-                        {
-                            worldArr[i].Add(1);
-                        }
+
+                        worldArr[i].Add(0);
+
                     }
                     else
                     {
-                        worldArr[i].Add(1);
+
+                        this.generateCaveLevelBlock(i, j);
+
                     }
 
                 }
 
                 else
                 {
-
                     worldArr[i].Add(-1);
+                }
+                
+            }
+            
+        }
+
+        this.cutOutTop();
+
+        this.generateOres();
+        Debug.Log("Done creating world");
+
+    }
+
+    private float generatePerlinValue(int j, int i, int scale)
+    {
+        return Mathf.PerlinNoise((((float)j * 16 / 1920) * scale + offSetX), (((float)i * 16 / 1080) * scale + offSetY));
+    }
+
+    public int getWorldSize (bool isX)
+    {
+        if(isX)
+            return numOfBlocksX;
+        return numOfBlocksY;
+    }
+
+    public List<List<int>> getWorld()
+    {
+        return worldArr;
+    }
+
+    private void addBaseBlock(int y, int x)
+    {
+        // since there is a block, check what kind of a block should there be
+        // if the block is on the very top it should be a grass
+        if (y == 0)
+        {
+            worldArr[y].Add(1);
+        }
+        else
+        {
+            // if there is a block above than the block has to be dirt, else grass
+            if (worldArr[y - 1][x] == -1)
+            {
+                worldArr[y].Add(1);
+            }
+            else
+            {
+                worldArr[y].Add(0);
+            }
+        }
+    }
+
+    private void cutOutTop()
+    {
+        for (int i = 0; i < numOfBlocksX; i++)
+        {
+
+            int hillSize = (int)(maxHillSize - ((2 * maxHillSize) * generatePerlinValue(i, skySize, groundScale)));
+            for (int j = 0; j < Math.Abs(hillSize); j++)
+            {
+
+                if (hillSize > 0)
+                {
+
+                    worldArr[skySize - j][i] = 0;
+
+                }
+                else
+                {
+
+                    worldArr[skySize + j][i] = -1;
 
                 }
 
             }
+
         }
+    }
+    private void generateCaveLevelBlock(int y, int x)
+    {
+
+        // if perlin noise returns value that is greater than 0.5 there should be no block
+        if (generatePerlinValue(x, y, caveScale) < 0.5)
+        {
+            addBaseBlock(y, x);
+
+        }
+
+        else
+        {
+
+            worldArr[y].Add(-1);
+
+        }
+
+    }
+
+    private void generateOres()
+    {
 
         // choose random amount of gold nodes in the world
         int n = Random.Range(5, 10);
@@ -72,7 +168,7 @@ public class WorldGeneration : MonoBehaviour
         for (int i = 0; i < n; i++)
         {
 
-            Vector2 goldNodeCenter = new Vector2(Random.Range(0, numOfBlocksX), Random.Range(0, numOfBlocksY));
+            Vector2 goldNodeCenter = new Vector2(Random.Range(0, numOfBlocksX), Random.Range(caveStart, numOfBlocksY));
             int goldNodeDiameter = Random.Range(3, 9);
             // goldNodeMiddle is the number of blocks to the left of the middle block
             int goldNodeMiddle = (int)Math.Ceiling((float)goldNodeDiameter / 2.0f) - 1;
@@ -95,32 +191,13 @@ public class WorldGeneration : MonoBehaviour
                             worldArr[y][x] = 2;
                         }
                     }
-                        
+
                 }
 
             }
 
         }
 
-        Debug.Log("Done creating world");
-
-    }
-
-    private float generatePerlinValue(int j, int i)
-    {
-        return Mathf.PerlinNoise((((float)j * 16 / 1920) * scale + offSetX), (((float)i * 16 / 1080) * scale + offSetY));
-    }
-
-    public int getWorldSize (bool isX)
-    {
-        if(isX)
-            return numOfBlocksX;
-        return numOfBlocksY;
-    }
-
-    public List<List<int>> getWorld()
-    {
-        return worldArr;
     }
 
 }

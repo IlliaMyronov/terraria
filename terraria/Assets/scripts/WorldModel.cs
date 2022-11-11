@@ -7,9 +7,9 @@ using UnityEngine;
 public class WorldModel : MonoBehaviour
 {
 
-    private static Vector2 screenSize = new Vector2(120, 68);
+    private static Vector2 screenSize = new Vector2(120, 150);
     private int chunkSizeX = 140;
-    private int chunkSizeY = 68;
+    private int chunkSizeY = 120;
     private int blockSize = 16;
     private Vector2 relativePos = new Vector2(0.0f, 0.0f);
     private Vector2 realPos = new Vector2(0.0f, 0.0f);
@@ -25,10 +25,12 @@ public class WorldModel : MonoBehaviour
     private GameObject cam;
     private Vector2 acceleration;
     private float friction = 10.0f;
+    private bool mayGoLeft = true;
+    private bool mayGoRight = true;
     public void generateWorld()
     {
         worldGen.generateWorld();
-        scene = worldRedrawer.drawWorldV2(scene, worldGen.getWorld(), blockPrefab, chunkSizeX, chunkSizeY);
+        scene = worldRedrawer.drawWorldV2(scene, worldGen.getWorld(), blockPrefab, chunkSizeX, chunkSizeY);     
     }
     public void drawWorld()
     {
@@ -41,12 +43,12 @@ public class WorldModel : MonoBehaviour
     public void move(String moveType)
     {
 
-        if (moveType == "moveLeft")
+        if (moveType == "moveLeft" && mayGoLeft)
         {
             acceleration.x = -5.0f;
         }
 
-        else if (moveType == "moveRight")
+        else if (moveType == "moveRight" && mayGoRight)
         {
             acceleration.x = 5.0f;
         }
@@ -111,9 +113,28 @@ public class WorldModel : MonoBehaviour
         if (velocity.x != 0.0f)
             moveChar(velocity);
 
+        /*if (Math.Abs(realPos.x) > (((worldGen.getWorld()[0].Count / 2) - (chunkSizeX / 2)) * blockSize) && velocity.x != 0)
+        {
+            Debug.Log("limitting motion");
+            if (realPos.x > 0)
+            {
+                mayGoRight = false;
+                velocity.x = 0.0f;
+                moveChar(velocity);
+            }
+            else
+            {
+                mayGoLeft = false;
+                velocity.x = 0.0f;
+                moveChar(velocity);
+            }
+
+        }*/
+        //&& (Math.Abs(realPos.x + relativePos.x) < ((worldGen.getWorld().Count / 2) - (chunkSizeX / 2)) * blockSize)
+
         if ((relativePos.x > 100) || (relativePos.x < -100))
         {
-            Debug.Log("redrawing because relative pos of x is " + relativePos.x);
+            Debug.Log("first half is " + Math.Abs(realPos.x) + " second half is " + (worldGen.getWorld()[0].Count / 2 * blockSize));
             scene = worldRedrawer.redrawWorldV3(scene, worldGen.getWorld(), blockPrefab, relativePos, blockSize, chunkSizeX, chunkSizeY, realPos);
             realPos.x += relativePos.x;
             realPos.y += relativePos.y;
