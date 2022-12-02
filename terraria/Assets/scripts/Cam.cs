@@ -32,5 +32,13 @@ public class Cam : MonoBehaviour
         {
             rb.velocity = new Vector2(0, 0);
         }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            rb.velocity = new Vector2(0, -5);
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
     }
 }
