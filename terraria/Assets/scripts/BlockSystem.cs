@@ -6,15 +6,13 @@ public class BlockSystem : MonoBehaviour
 {
 
     // lists for storing solid blocks
-    [SerializeField]
-    private Sprite[] solidBlocks;
-    [SerializeField]
-    private string[] solidNames;
+    [SerializeField] private Sprite[] solidBlocks;
+    [SerializeField] private string[] solidNames;
 
     // list to store all existing blocks
     public BlockInfo[] allBlocks;
 
-    private void Awake()
+    public void GenerateList()
     {
 
         // Initialize allBlocks array
@@ -57,6 +55,11 @@ public class BlockInfo
     public Sprite getSprite()
     {
         return blockSprite; 
+    }
+
+    public string getName()
+    {
+        return blockName;
     }
 
 }

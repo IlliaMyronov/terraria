@@ -4,15 +4,33 @@ using UnityEngine;
 
 public class Cam : MonoBehaviour
 {
-    private Rigidbody2D rb;
-
-    private void Awake()
+    [SerializeField] Rigidbody2D rb;
+    void Update()
     {
-        rb = this.GetComponent<Rigidbody2D>();
-    }
-    public void move(Vector2 velocity)
-    {
-        rb.velocity = velocity;
-    }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            rb.velocity = new Vector2(5, 0);
+        }
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
 
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            rb.velocity = new Vector2(-5, 0);
+        }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            rb.velocity = new Vector2(0, 5);
+        }
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
+    }
 }
