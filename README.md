@@ -1,5 +1,6 @@
 # terraria
 game project for computer science class.
+
 Repository directions:
 
 Main - final project ready to release
