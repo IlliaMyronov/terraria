@@ -7,6 +7,8 @@ public class Chunk : MonoBehaviour
     [SerializeField] private GameObject blockPrefab;
     private int chunkSize;
     private List<List<List<GameObject>>> chunkBlocks;
+    public Vector2Int myArrayPos;
+
     private void Awake()
     {
         chunkSize = 16;
@@ -20,6 +22,9 @@ public class Chunk : MonoBehaviour
     }
     public void PopulateChunk(List<List<int>> world, List<List<int>> background, Vector2Int arrayPos, GameObject terrain, BlockSystem blockSys)
     {
+        // saving array position to make it easier to access array position for the new chunks.
+        myArrayPos= arrayPos;
+
         for (int i = 0; i < chunkSize; i++)
         {
             chunkBlocks.Add(new List<List<GameObject>>());
@@ -42,6 +47,8 @@ public class Chunk : MonoBehaviour
                     tile.transform.position = new Vector2(this.transform.position.x + j, this.transform.position.y - i);
                     tile.transform.parent = this.transform;
                     tile.GetComponent<SpriteRenderer>().sortingLayerName = "Solid";
+                    tile.AddComponent<BoxCollider2D>();
+                    tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
                     tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].getSprite();
                     chunkBlocks[i][j].Add(tile);
                 }

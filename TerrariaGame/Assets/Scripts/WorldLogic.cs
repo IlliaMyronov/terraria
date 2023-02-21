@@ -16,6 +16,7 @@ public class WorldLogic : MonoBehaviour
     private List<List<int>> world;
     private List<List<int>> background;
     private Vector2 lastRedrawPos;
+    private Vector2 resolution;
 
     private void Awake()
     {
@@ -24,7 +25,9 @@ public class WorldLogic : MonoBehaviour
         world = worldGenerator.GetWorld();
         background = worldGenerator.GetBackground();
         background = worldGenerator.GetBackground();
-        lastRedrawPos = new Vector2(0, 0);
+
+        // currently set to standard resolution make editable later
+        resolution = new Vector2(1920, 1080);
 
     }
 
@@ -32,7 +35,9 @@ public class WorldLogic : MonoBehaviour
     {
         blockSys.GenerateList();
         worldGenerator.GenerateWorld();
-        worldDrawer.DrawWorld(world, background, scene, chunksPerScreen, blockSys);
+        cam.transform.position = new Vector3(worldGenerator.getSpawnLocation().x, worldGenerator.getSpawnLocation().y,  cam.transform.position.z);
+        worldDrawer.DrawWorld(world, background, scene, chunksPerScreen, worldGenerator.getSpawnLocation(), blockSys);
+        lastRedrawPos = cam.transform.position;
     }
 
     private void Update()
@@ -45,6 +50,13 @@ public class WorldLogic : MonoBehaviour
             Debug.Log("sending redraw request, camera pos is " + cam.transform.position);
             worldDrawer.RedrawWorld(world, background, scene, cam.transform.position, lastRedrawPos, blockSys, redrawDistance);
             lastRedrawPos = cam.transform.position;
+        }
+
+        if (Input.GetMouseButtonDown(0)) 
+        {
+
+            Debug.Log(Input.mousePosition);
+
         }
     }
 }

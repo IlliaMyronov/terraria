@@ -9,9 +9,9 @@ public class WorldDrawer : MonoBehaviour
 {
     [SerializeField] GameObject chunkPrefab;
     private static int chunkSize = 16;
-    Vector2Int worldSize;
-    GameObject terrain;
-    public List<List<GameObject>> DrawWorld(List<List<int>> world, List<List<int>> background, List<List<GameObject>> sceneChunks, Vector2Int chunksPerScreen, BlockSystem blockSys)
+    private Vector2Int worldSize;
+    private GameObject terrain;
+    public List<List<GameObject>> DrawWorld(List<List<int>> world, List<List<int>> background, List<List<GameObject>> sceneChunks, Vector2Int chunksPerScreen, Vector2Int spawnLocation, BlockSystem blockSys)
     {
 
         worldSize = new Vector2Int(world[0].Count, world.Count);
@@ -26,11 +26,12 @@ public class WorldDrawer : MonoBehaviour
 
                 GameObject newChunk = Instantiate(chunkPrefab) as GameObject;
                 newChunk.transform.parent = terrain.transform;
-                Vector2 chunkPos = new Vector2(j * chunkSize - (chunksPerScreen.x / 2) * chunkSize, (chunksPerScreen.y / 2) * chunkSize - (i * chunkSize));
+                //((chunksPerScreen.x / 2) + j - spawnLocation.x / chunkSize) * chunkSize, (spawnLocation.y / chunkSize - i + (chunksPerScreen.y / 2)) * chunkSize
+                Vector2 chunkPos = new Vector2(spawnLocation.x - ((chunksPerScreen.x / 2) * chunkSize) + (j * chunkSize), spawnLocation.y + ((chunksPerScreen.y / 2) * chunkSize) - (i * chunkSize));
+                Debug.Log("chunk pos is " + chunkPos);
                 newChunk.transform.position = chunkPos;
-                Vector2Int worldSize = new Vector2Int(world[0].Count, world.Count);
-                Vector2Int arrayPos = FindArrPos(chunkPos, worldSize);
-
+                Vector2Int arrayPos = new Vector2Int((int)chunkPos.x, spawnLocation.y - ((chunksPerScreen.y / 2) * chunkSize) + (i * chunkSize));
+                
                 newChunk.GetComponent<Chunk>().PopulateChunk(world, background, arrayPos, terrain, blockSys);
 
                 sceneChunks[i].Add(newChunk);
@@ -39,7 +40,6 @@ public class WorldDrawer : MonoBehaviour
 
         }
 
-        Debug.Log("done drawing the map");
         return sceneChunks;
 
     }
@@ -62,6 +62,7 @@ public class WorldDrawer : MonoBehaviour
             Vector2Int chunkToDelete;
             Vector2Int chunkToInsert;
             Vector2 chunkPos;
+            Vector2Int arrayPos;
 
             for (int i = 0; i < sceneChunks.Count; i++)
             {
@@ -74,8 +75,11 @@ public class WorldDrawer : MonoBehaviour
                     chunkToInsert = new Vector2Int(sceneChunks[i].Count - 1, i);
 
                     //finding position to place new chunk
-                    chunkPos = new Vector2(sceneChunks[i][sceneChunks[i].Count - 1].transform.position.x + chunkSize,
-                                                    sceneChunks[i][sceneChunks[i].Count - 1].transform.position.y);
+                    chunkPos = new Vector2(sceneChunks[chunkToInsert.y][chunkToInsert.x].transform.position.x + chunkSize,
+                                           sceneChunks[chunkToInsert.y][chunkToInsert.x].transform.position.y);
+
+                    arrayPos = new Vector2Int(sceneChunks[chunkToInsert.y][chunkToInsert.x].GetComponent<Chunk>().myArrayPos.x + chunkSize,
+                                              sceneChunks[chunkToInsert.y][chunkToInsert.x].GetComponent<Chunk>().myArrayPos.y);
                 }
                 else
                 {
@@ -86,7 +90,11 @@ public class WorldDrawer : MonoBehaviour
                     chunkToInsert = new Vector2Int(0, i);
 
                     //finding position to place new chunk
-                    chunkPos = new Vector2(sceneChunks[i][0].transform.position.x - chunkSize, sceneChunks[i][0].transform.position.y);
+                    chunkPos = new Vector2(sceneChunks[chunkToInsert.y][chunkToInsert.x].transform.position.x - chunkSize, 
+                                           sceneChunks[chunkToInsert.y][chunkToInsert.x].transform.position.y);
+
+                    arrayPos = new Vector2Int(sceneChunks[chunkToInsert.y][chunkToInsert.x].GetComponent<Chunk>().myArrayPos.x - chunkSize,
+                                              sceneChunks[chunkToInsert.y][chunkToInsert.x].GetComponent<Chunk>().myArrayPos.y);
                 }
 
                 sceneChunks[chunkToDelete.y][chunkToDelete.x].GetComponent<Chunk>().DestroyChunk();
@@ -97,7 +105,6 @@ public class WorldDrawer : MonoBehaviour
                 GameObject newChunk = Instantiate(chunkPrefab) as GameObject;
                 newChunk.transform.parent = terrain.transform;
                 newChunk.transform.position = chunkPos;
-                Vector2Int arrayPos = FindArrPos(chunkPos, worldSize);
                 newChunk.GetComponent<Chunk>().PopulateChunk(world, background, arrayPos, terrain, blockSys);
                 sceneChunks[chunkToInsert.y].Insert(chunkToInsert.x, newChunk);
 
@@ -127,6 +134,8 @@ public class WorldDrawer : MonoBehaviour
             Vector2Int chunkToDelete;
             int chunkToAdd;
             Vector2 chunkPos;
+            Vector2Int chunkReference;
+            Vector2Int arrayPos;
 
             //loop that adds and deletes all needed chunks
             for (int i = 0; i < sceneChunks[1].Count; i++)
@@ -142,8 +151,16 @@ public class WorldDrawer : MonoBehaviour
                     chunkToAdd = 0;
 
                     //finding position to place new chunk
-                    chunkPos = new Vector2(sceneChunks[1][i].transform.position.x, sceneChunks[1][i].transform.position.y + chunkSize);
+                    chunkReference = new Vector2Int(i, 1);
+                    chunkPos = new Vector2(sceneChunks[chunkReference.y][chunkReference.x].transform.position.x, 
+                                           sceneChunks[chunkReference.y][chunkReference.x].transform.position.y + chunkSize);
+
+                    //finding array position of new chunk
+                    arrayPos = new Vector2Int(sceneChunks[chunkReference.y][chunkReference.x].GetComponent<Chunk>().myArrayPos.x,
+                                              sceneChunks[chunkReference.y][chunkReference.x].GetComponent<Chunk>().myArrayPos.y - chunkSize);
+
                 }
+
                 else
                 {
                     //finding the position of top right chunk to delete it
@@ -153,9 +170,15 @@ public class WorldDrawer : MonoBehaviour
                     chunkToAdd = sceneChunks.Count - 1;
 
                     //finding position to place new chunk
-                    chunkPos = new Vector2(sceneChunks[sceneChunks.Count - 2][i].transform.position.x, sceneChunks[sceneChunks.Count - 2][i].transform.position.y - chunkSize);
+                    chunkReference = new Vector2Int(i, sceneChunks.Count - 2);
+                    chunkPos = new Vector2(sceneChunks[chunkReference.y][chunkReference.x].transform.position.x, 
+                                           sceneChunks[chunkReference.y][chunkReference.x].transform.position.y - chunkSize);
+
+                    //finding array position of a new chunk
+                    arrayPos = new Vector2Int(sceneChunks[chunkReference.y][chunkReference.x].GetComponent<Chunk>().myArrayPos.x,
+                                              sceneChunks[chunkReference.y][chunkReference.x].GetComponent<Chunk>().myArrayPos.y + chunkSize);
                 }
-                Debug.Log("deleting chunk at " + sceneChunks[chunkToDelete.y][chunkToDelete.x].transform.position + " adding chunk at " + chunkPos);
+
                 //deleting a chunk
                 sceneChunks[chunkToDelete.y][chunkToDelete.x].GetComponent<Chunk>().DestroyChunk();
                 Destroy(sceneChunks[chunkToDelete.y][chunkToDelete.x]);
@@ -165,7 +188,6 @@ public class WorldDrawer : MonoBehaviour
                 GameObject newChunk = Instantiate(chunkPrefab) as GameObject;
                 newChunk.transform.parent = terrain.transform;
                 newChunk.transform.position = chunkPos;
-                Vector2Int arrayPos = FindArrPos(chunkPos, worldSize);
                 newChunk.GetComponent<Chunk>().PopulateChunk(world, background, arrayPos, terrain, blockSys);
                 sceneChunks[chunkToAdd].Add(newChunk);
             }

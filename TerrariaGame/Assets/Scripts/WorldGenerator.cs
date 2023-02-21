@@ -30,6 +30,9 @@ public class WorldGenerator : MonoBehaviour
     // variable that stores the size of the world
     private Vector2Int worldSize;
 
+    // variable to store spawn location of a player
+    private Vector2Int spawnLocation;
+
     private void Awake()
     {
         worldSize = new Vector2Int(256, skySize + groundSize + caveSize);
@@ -88,13 +91,17 @@ public class WorldGenerator : MonoBehaviour
 
         }
 
-        GenerateBlobs();
+        this.GenerateBlobs();
+
+        this.findSpawnLocation();
+        Debug.Log(spawnLocation);
 
     }
 
     private float GeneratePerlinValue(int x, int y, float scale)
     {
-        return Mathf.PerlinNoise((((float)x / 1920) * scale + perlinOffset.x), (((float)y / 1080) * scale + perlinOffset.y));
+        return Mathf.PerlinNoise((((float)x / 1920) * scale + perlinOffset.x), 
+                                 (((float)y / 1080) * scale + perlinOffset.y));
     }
 
     public List<List<int>> GetWorld()
@@ -129,6 +136,35 @@ public class WorldGenerator : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void findSpawnLocation()
+    {
+        spawnLocation.x = worldSize.x / 2;
+
+        int yLocationCounter = worldSize.y / 2;
+
+        bool run = true;
+
+        while (run)
+        {
+
+            if (background[yLocationCounter][spawnLocation.x] == -1)
+            {
+                yLocationCounter -= 5;
+                run = false;
+            }
+
+            else
+                yLocationCounter--;
+        }
+
+        spawnLocation.y = yLocationCounter;
+    }
+
+    public Vector2Int getSpawnLocation()
+    {
+        return spawnLocation;
     }
 }
 
