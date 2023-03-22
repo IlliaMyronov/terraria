@@ -214,4 +214,8 @@ public class WorldDrawer : MonoBehaviour
         return new Vector2Int((int)(pos.x + (worldSize.x / 2)), (int)Math.Abs(pos.y - (worldSize.y / 2)));
     }
 
+    public int GetChunkSize()
+    {
+        return chunkSize;
+    }
 }

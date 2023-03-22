@@ -15,9 +15,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Solid Blocks
+  - Backing Blocks
+  - Character
   - 
   - 
   - 
@@ -40,4 +40,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Backing
+    uniqueID: 2476104637
+    locked: 0
+  - name: Solid
+    uniqueID: 3810547637
     locked: 0

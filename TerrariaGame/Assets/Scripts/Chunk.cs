@@ -47,6 +47,7 @@ public class Chunk : MonoBehaviour
                     tile.transform.position = new Vector2(this.transform.position.x + j, this.transform.position.y - i);
                     tile.transform.parent = this.transform;
                     tile.GetComponent<SpriteRenderer>().sortingLayerName = "Solid";
+                    tile.layer = 10;
                     tile.AddComponent<BoxCollider2D>();
                     tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
                     tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].getSprite();
@@ -68,6 +69,9 @@ public class Chunk : MonoBehaviour
                     tile.transform.position = new Vector2(this.transform.position.x + j, this.transform.position.y - i);
                     tile.transform.parent = this.transform;
                     tile.GetComponent<SpriteRenderer>().sortingLayerName = "Backing";
+                    tile.layer = 11;
+                    tile.AddComponent<BoxCollider2D>();
+                    tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
                     tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[background[currentBlock.y][currentBlock.x] + blockSys.backingStart].getSprite();
                     chunkBlocks[i][j].Add(tile);
                 }
@@ -104,6 +108,20 @@ public class Chunk : MonoBehaviour
 
                 }
             }
+        }
+    }
+
+    public void DestroyMyBlock(Vector2Int arrayPos, bool isSolid)
+    {
+        if (isSolid)
+        {
+            Destroy(chunkBlocks[arrayPos.y][arrayPos.x][0]);
+            chunkBlocks[arrayPos.y][arrayPos.x][0] = null;
+        }
+        else
+        {
+            Destroy(chunkBlocks[arrayPos.y][arrayPos.x][1]);
+            chunkBlocks[arrayPos.y][arrayPos.x][1] = null;
         }
     }
 }

@@ -94,7 +94,6 @@ public class WorldGenerator : MonoBehaviour
         this.GenerateBlobs();
 
         this.findSpawnLocation();
-        Debug.Log(spawnLocation);
 
     }
 
