@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class WorldDrawer : MonoBehaviour
 {
@@ -28,7 +27,6 @@ public class WorldDrawer : MonoBehaviour
                 newChunk.transform.parent = terrain.transform;
                 //((chunksPerScreen.x / 2) + j - spawnLocation.x / chunkSize) * chunkSize, (spawnLocation.y / chunkSize - i + (chunksPerScreen.y / 2)) * chunkSize
                 Vector2 chunkPos = new Vector2(spawnLocation.x - ((chunksPerScreen.x / 2) * chunkSize) + (j * chunkSize), spawnLocation.y + ((chunksPerScreen.y / 2) * chunkSize) - (i * chunkSize));
-                Debug.Log("chunk pos is " + chunkPos);
                 newChunk.transform.position = chunkPos;
                 Vector2Int arrayPos = new Vector2Int((int)chunkPos.x, spawnLocation.y - ((chunksPerScreen.y / 2) * chunkSize) + (i * chunkSize));
                 
@@ -140,7 +138,6 @@ public class WorldDrawer : MonoBehaviour
             //loop that adds and deletes all needed chunks
             for (int i = 0; i < sceneChunks[1].Count; i++)
             {
-                Debug.Log("inside for loop");
                 //check from which side should we add a chunk and from which should we delete it
                 if (playerY > lastCharPosY)
                 {

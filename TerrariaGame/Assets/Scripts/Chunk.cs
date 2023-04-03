@@ -43,14 +43,12 @@ public class Chunk : MonoBehaviour
                     // add a solid block to the first position of the array
 
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
-                    tile.name = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].getName();
+                    tile.name = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].GetName();
                     tile.transform.position = new Vector2(this.transform.position.x + j, this.transform.position.y - i);
                     tile.transform.parent = this.transform;
                     tile.GetComponent<SpriteRenderer>().sortingLayerName = "Solid";
                     tile.layer = 10;
-                    tile.AddComponent<BoxCollider2D>();
-                    tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
-                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].getSprite();
+                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[world[currentBlock.y][currentBlock.x]].GetSprite();
                     chunkBlocks[i][j].Add(tile);
                 }
                 else
@@ -65,14 +63,12 @@ public class Chunk : MonoBehaviour
                     // add a background block (same as a solid block but we have to shift array position in Block System)
 
                     GameObject tile = Instantiate(blockPrefab) as GameObject;
-                    tile.name = blockSys.allBlocks[background[currentBlock.y][currentBlock.x] + blockSys.backingStart].getName();
+                    tile.name = blockSys.allBlocks[background[currentBlock.y][currentBlock.x] + blockSys.backingStart].GetName();
                     tile.transform.position = new Vector2(this.transform.position.x + j, this.transform.position.y - i);
                     tile.transform.parent = this.transform;
                     tile.GetComponent<SpriteRenderer>().sortingLayerName = "Backing";
                     tile.layer = 11;
-                    tile.AddComponent<BoxCollider2D>();
-                    tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
-                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[background[currentBlock.y][currentBlock.x] + blockSys.backingStart].getSprite();
+                    tile.GetComponent<SpriteRenderer>().sprite = blockSys.allBlocks[background[currentBlock.y][currentBlock.x] + blockSys.backingStart].GetSprite();
                     chunkBlocks[i][j].Add(tile);
                 }
                 else
@@ -123,5 +119,22 @@ public class Chunk : MonoBehaviour
             Destroy(chunkBlocks[arrayPos.y][arrayPos.x][1]);
             chunkBlocks[arrayPos.y][arrayPos.x][1] = null;
         }
+    }
+
+    public void CreateNewBlock(Vector2Int arrayPos, bool isSolid, string name, Sprite sprite)
+    {
+        
+        GameObject tile = Instantiate(blockPrefab) as GameObject;
+        tile.name = name;
+        tile.transform.position = new Vector2(this.transform.position.x + arrayPos.x, this.transform.position.y - arrayPos.y);
+        tile.transform.parent = this.transform;
+        tile.GetComponent<SpriteRenderer>().sortingLayerName = "Solid";
+        tile.layer = 10;
+        tile.AddComponent<BoxCollider2D>();
+        tile.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
+        tile.GetComponent<SpriteRenderer>().sprite = sprite;
+        chunkBlocks[arrayPos.y][arrayPos.x][0] = tile;
+        Debug.Log("added a tile");
+        
     }
 }

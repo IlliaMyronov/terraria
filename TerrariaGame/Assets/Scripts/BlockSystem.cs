@@ -73,12 +73,12 @@ public class BlockInfo
         blockSprite = mySprite;
         isSolid = myIsSolid;
     }
-    public Sprite getSprite()
+    public Sprite GetSprite()
     {
         return blockSprite;
     }
 
-    public string getName()
+    public string GetName()
     {
         return blockName;
     }

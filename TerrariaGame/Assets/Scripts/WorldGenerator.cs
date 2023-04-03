@@ -165,6 +165,24 @@ public class WorldGenerator : MonoBehaviour
     {
         return spawnLocation;
     }
+
+    public Vector2Int GetWorldSize()
+    {
+        return worldSize;
+    }
+
+    public void ChangeBlock(Vector2Int arrPos, int changeTo, bool isSolid)
+    {
+        if (isSolid)
+        {
+            world[arrPos.y][arrPos.x] = changeTo;
+        }
+
+        else
+        {
+            background[arrPos.y][arrPos.x] = changeTo;
+        }
+    }
 }
 
 public class ellipse
@@ -207,5 +225,4 @@ public class ellipse
     {
         return coordinates;
     }
-
 }
